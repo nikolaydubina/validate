@@ -75,7 +75,7 @@ It is notable that printing error takes lots of time.
 Thus, it is good to delay constructor of error message as much as possible.
 This is done by moving construction of error message in `Error` methods.
 
-Everything to format error we already have in validators, which is why reusing them as error containers.
+We already have in validators everything needed to format error message, which is why reusing them as error containers.
 
 ## Benchmarks
 
