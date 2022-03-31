@@ -81,8 +81,7 @@ Most of time and memory allocations happen in validators that use containers.
 Thus it is advised to avoid `OneOf` and alike.
 If possible, define your own validators with arrays and not slices or maps.
 Custom validators with switch cases are expected to be even more performant.
-
-As of 2022-04-01, Go does not support generic arrays. Otherwise, we would use arrays in `OneOf`.
+As of 2022-04-01, Go does not support generic arrays. Otherwise, we would use arrays.
 
 ## Benchmarks
 
