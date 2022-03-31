@@ -2,6 +2,9 @@
 
 No reflection. No gencode. Hierarchical and extendable. Fairly fast. 100LOC. Generics.
 
+This is convenient when you have custom validation and nested structures.
+Your type has to satisfy `Validate() error` interface, and you are good to go!
+
 ```go
 // Employee is example of struct with validatable fields and nested structure
 type Employee struct {
