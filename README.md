@@ -93,7 +93,7 @@ ok  	github.com/nikolaydubina/validate	82.234s
 
 ## Appendix A: Comparison to other validators
 
-##### `github.com/go-playground/validator`
+#### `github.com/go-playground/validator`
 
 It uses struct tags and reflection.
 Binding custom validations require defining validation function with special name and using interface typecast then registering this to validator instance.
