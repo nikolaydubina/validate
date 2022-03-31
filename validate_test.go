@@ -178,3 +178,64 @@ func BenchmarkEmployee_Success(b *testing.B) {
 		}
 	}
 }
+
+type EmployeeSimple struct {
+	Name   string
+	Age    int
+	Salary float64
+}
+
+func (s EmployeeSimple) Validate() error {
+	return validate.All(
+		validate.OneOf[string]{Value: s.Name, Values: []string{"Zeus", "Hera"}},
+		validate.OneOf[int]{Value: s.Age, Values: []int{35, 55}},
+		validate.MinMax[int]{Value: s.Age, Min: 10, Max: 100},
+		validate.MinMax[float64]{Value: s.Salary, Min: -10, Max: 123.456},
+	)
+}
+
+func BenchmarkEmployeeSimple_Error_Ignore(b *testing.B) {
+	e := EmployeeSimple{
+		Name:   "Bob",
+		Age:    101,
+		Salary: 256.99,
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if e.Validate() == nil {
+			b.FailNow()
+		}
+	}
+}
+
+func BenchmarkEmployeeSimple_Error_Use(b *testing.B) {
+	e := EmployeeSimple{
+		Name:   "Bob",
+		Age:    101,
+		Salary: 256.99,
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		msg := e.Validate().Error()
+		if msg == "" {
+			b.FailNow()
+		}
+	}
+}
+
+func BenchmarkEmployeeSimple_Success(b *testing.B) {
+	e := EmployeeSimple{
+		Name:   "Hera",
+		Age:    55,
+		Salary: 79,
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if e.Validate() != nil {
+			b.FailNow()
+		}
+	}
+}
