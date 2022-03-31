@@ -27,7 +27,7 @@ func All(vs ...Validatable) error {
 	var errs []error
 	for _, f := range vs {
 		if err := f.Validate(); err != nil {
-			errs = append(errs, f.Validate())
+			errs = append(errs, err)
 		}
 	}
 	if len(errs) > 0 {
@@ -98,4 +98,3 @@ func (s OneOf[T]) Validate() error {
 func (s OneOf[T]) Error() string {
 	return fmt.Sprintf("(%v) is not in %v", s.Value, s.Values)
 }
-
