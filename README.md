@@ -5,6 +5,8 @@ No reflection. No gencode. Hierarchical and extendable. Fairly fast. 100LOC. Gen
 This is convenient when you have custom validation and nested structures.  
 Your type has to satisfy `Validate() error` interface and you are good to go!
 
+This is intended to be alternative to `github.com/go-playground/validator` and other methods using reflection or gencode. 
+
 ```go
 // Employee is example of struct with validatable fields and nested structure
 type Employee struct {

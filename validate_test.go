@@ -84,6 +84,19 @@ func TestEmployee_Error(t *testing.T) {
 			},
 			err: errors.New("(Bob) is not in [Zeus Hera];(101) is not in [35 55];(101) higher than max (100);wrong value(orange), expected([red green blue]);(Berkeley) is not in [KAIST Stanford];(256.99) higher than max (123.456)"),
 		},
+		{
+			e: Employee{
+				Name:  "Bob",
+				Age:   -10,
+				Color: "orange",
+				Education: Education{
+					Duration:   75,
+					SchoolName: "Berkeley",
+				},
+				Salary: 256.99,
+			},
+			err: errors.New("(Bob) is not in [Zeus Hera];(-10) is not in [35 55];(-10) smaller than min (10);wrong value(orange), expected([red green blue]);(Berkeley) is not in [KAIST Stanford];(256.99) higher than max (123.456)"),
+		},
 	}
 	for i, tc := range tests {
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
