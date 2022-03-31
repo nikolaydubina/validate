@@ -1,10 +1,10 @@
-# validate
+# 🥬 validate. simply.
 
-[![codecov](https://codecov.io/gh/nikolaydubina/validate/branch/master/graph/badge.svg?token=76JC6fX7DP)](https://codecov.io/gh/nikolaydubina/validate)
+> no reflection. no gencode. hierarchical and extendable. fairly fast. 100LOC. generics.
+
+[![codecov](https://codecov.io/gh/nikolaydubina/validate/branch/main/graph/badge.svg?token=76JC6fX7DP)](https://codecov.io/gh/nikolaydubina/validate)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/validate.svg)](https://pkg.go.dev/github.com/nikolaydubina/validate)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/validate)](https://goreportcard.com/report/github.com/nikolaydubina/validate)
-
-No reflection. No gencode. Hierarchical and extendable. Fairly fast. 100LOC. Generics.
 
 This is convenient when you have custom validation and nested structures.  
 Your type has to satisfy `Validate() error` interface and you are good to go!
@@ -75,7 +75,7 @@ It is notable that printing error takes lots of time.
 Thus, it is good to delay constructor of error message as much as possible.
 This is done by moving construction of error message in `Error` methods.
 
-Everything to format error we already have in validators, which is why reusing them as error containers.
+We already have in validators everything needed to format error message, which is why reusing them as error containers.
 
 Most of time and memory allocations happen in validators that use containers.
 Thus it is advised to avoid `OneOf` and alike.
@@ -116,4 +116,4 @@ It has instance of validator that is reused.
 
 Its speed is mostly few hundred ns and up to 1µs.
 Its memory allocation can be 0 and reaches up to few dozen.
-In both, speed and memory allocation it wins.
+It wins in both speed and memory allocation.
