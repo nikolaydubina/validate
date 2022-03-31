@@ -92,14 +92,14 @@ goos: darwin
 goarch: amd64
 pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
-BenchmarkEmployee_Error_Ignore-10                	 9370138	      1286 ns/op	    1120 B/op	      39 allocs/op
 BenchmarkEmployee_Error_Use-10                   	 4381866	      2750 ns/op	    1856 B/op	      62 allocs/op
+BenchmarkEmployee_Error_Ignore-10                	 9370138	      1286 ns/op	    1120 B/op	      39 allocs/op
 BenchmarkEmployee_Success-10                     	31928192	       374 ns/op	     376 B/op	      15 allocs/op
-BenchmarkEmployeeSimple_Error_Ignore-10          	21584463	       548 ns/op	     568 B/op	      22 allocs/op
 BenchmarkEmployeeSimple_Error_Use-10             	 7597821	      1580 ns/op	    1056 B/op	      39 allocs/op
+BenchmarkEmployeeSimple_Error_Ignore-10          	21584463	       548 ns/op	     568 B/op	      22 allocs/op
 BenchmarkEmployeeSimple_Success-10               	51159644	       233 ns/op	     240 B/op	      10 allocs/op
-BenchmarkEmployeeNoContainers_Error_Ignore-10    	32474282	       369 ns/op	     296 B/op	      15 allocs/op
 BenchmarkEmployeeNoContainers_Error_Use-10       	14266191	       829 ns/op	     520 B/op	      23 allocs/op
+BenchmarkEmployeeNoContainers_Error_Ignore-10    	32474282	       369 ns/op	     296 B/op	      15 allocs/op
 BenchmarkEmployeeNoContainers_Success-10         	87722424	       137 ns/op	     112 B/op	       6 allocs/op
 PASS
 ok  	github.com/nikolaydubina/validate	116.387s
