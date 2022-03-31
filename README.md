@@ -72,7 +72,7 @@ pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
 BenchmarkEmployee_Error_Ignore-10    	 5050152	      2339 ns/op	    1920 B/op	      71 allocs/op
 BenchmarkEmployee_Error_Use-10       	 3125104	      3827 ns/op	    2657 B/op	      94 allocs/op
-BenchmarkEmployee_Success-10         	32163120	       373.3 ns/op	     376 B/op	      15 allocs/op
+BenchmarkEmployee_Success-10         	32163120	       373 ns/op	     376 B/op	      15 allocs/op
 PASS
 ok  	github.com/nikolaydubina/validate	42.913s
 ```
