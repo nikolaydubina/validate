@@ -67,7 +67,7 @@ func (s Color) Validate() error {
 
 ## Implementation Details
 
-It is notable, that printing error takes lots of time. 
+It is notable that printing error takes lots of time. 
 Thus, it is good to delay constructor of error message as much as possible.
 This is done by moving construction of error message in `Error` methods.
 
