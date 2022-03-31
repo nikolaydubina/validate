@@ -252,3 +252,58 @@ func BenchmarkEmployeeSimple_Success(b *testing.B) {
 		}
 	}
 }
+
+type EmployeeNoContainers struct {
+	Age    int
+	Salary float64
+}
+
+func (s EmployeeNoContainers) Validate() error {
+	return validate.All(
+		validate.MinMax[int]{Value: s.Age, Min: 10, Max: 100},
+		validate.MinMax[float64]{Value: s.Salary, Min: -10, Max: 123.456},
+	)
+}
+
+func BenchmarkEmployeeNoContainers_Error_Ignore(b *testing.B) {
+	e := EmployeeNoContainers{
+		Age:    101,
+		Salary: 256.99,
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if e.Validate() == nil {
+			b.FailNow()
+		}
+	}
+}
+
+func BenchmarkEmployeeNoContainers_Error_Use(b *testing.B) {
+	e := EmployeeNoContainers{
+		Age:    101,
+		Salary: 256.99,
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		msg := e.Validate().Error()
+		if msg == "" {
+			b.FailNow()
+		}
+	}
+}
+
+func BenchmarkEmployeeNoContainers_Success(b *testing.B) {
+	e := EmployeeNoContainers{
+		Age:    55,
+		Salary: 79,
+	}
+
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		if e.Validate() != nil {
+			b.FailNow()
+		}
+	}
+}

@@ -77,6 +77,13 @@ This is done by moving construction of error message in `Error` methods.
 
 Everything to format error we already have in validators, which is why reusing them as error containers.
 
+Most of time and memory allocations happen in validators that use containers.
+Thus it is advised to avoid `OneOf` and alike.
+If possible, define your own validators with arrays and not slices or maps.
+Custom validators with switch cases are expected to be even more performant.
+
+As of 2022-04-01, Go does not support generic arrays. Otherwise, we would use arrays in `OneOf`.
+
 ## Benchmarks
 
 ```
@@ -85,14 +92,17 @@ goos: darwin
 goarch: amd64
 pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
-BenchmarkEmployee_Error_Ignore-10          	 5057257	      2339 ns/op	    1920 B/op	      71 allocs/op
-BenchmarkEmployee_Error_Use-10             	 3085713	      3845 ns/op	    2657 B/op	      94 allocs/op
-BenchmarkEmployee_Success-10               	32345252	       371 ns/op	     376 B/op	      15 allocs/op
-BenchmarkEmployeeSimple_Error_Ignore-10    	13123828	       916 ns/op	     888 B/op	      38 allocs/op
-BenchmarkEmployeeSimple_Error_Use-10       	 6153162	      1958 ns/op	    1376 B/op	      55 allocs/op
-BenchmarkEmployeeSimple_Success-10         	51666874	       232 ns/op	     240 B/op	      10 allocs/op
+BenchmarkEmployee_Error_Ignore-10                	 5059479	      2362 ns/op	    1920 B/op	      71 allocs/op
+BenchmarkEmployee_Error_Use-10                   	 3111505	      3856 ns/op	    2657 B/op	      94 allocs/op
+BenchmarkEmployee_Success-10                     	32145518	       372 ns/op	     376 B/op	      15 allocs/op
+BenchmarkEmployeeSimple_Error_Ignore-10          	13109596	       921 ns/op	     888 B/op	      38 allocs/op
+BenchmarkEmployeeSimple_Error_Use-10             	 6140458	      1950 ns/op	    1376 B/op	      55 allocs/op
+BenchmarkEmployeeSimple_Success-10               	51758205	       231 ns/op	     240 B/op	      10 allocs/op
+BenchmarkEmployeeNoContainers_Error_Ignore-10    	18427038	       652 ns/op	     536 B/op	      29 allocs/op
+BenchmarkEmployeeNoContainers_Error_Use-10       	10758933	      1115 ns/op	     760 B/op	      37 allocs/op
+BenchmarkEmployeeNoContainers_Success-10         	87781112	       136 ns/op	     112 B/op	       6 allocs/op
 PASS
-ok  	github.com/nikolaydubina/validate	82.234s
+ok  	github.com/nikolaydubina/validate	120.166s
 ```
 
 ## Appendix A: Comparison to other validators
