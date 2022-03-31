@@ -98,7 +98,7 @@ ok  	github.com/nikolaydubina/validate	82.234s
 It uses struct tags and reflection.
 Binding custom validations require defining validation function with special name and using interface typecast then registering this to validator instance.
 
-It has instance of validator that is then reused.
+It has instance of validator that is reused.
 
 Its speed is mostly few hundred ns and up to 1µs.
 Its memory allocation can be 0 and reaches up to few dozen.
