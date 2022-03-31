@@ -98,3 +98,4 @@ func (s OneOf[T]) Validate() error {
 func (s OneOf[T]) Error() string {
 	return fmt.Sprintf("(%v) is not in %v", s.Value, s.Values)
 }
+
