@@ -118,8 +118,6 @@ func TestEmployee_Success(t *testing.T) {
 	}
 }
 
-// go test -timeout=1h -bench=. -benchtime=10s -benchmem ./...
-
 func BenchmarkEmployee_Error_Ignore(b *testing.B) {
 	e := Employee{
 		Name:  "Bob",
@@ -134,7 +132,9 @@ func BenchmarkEmployee_Error_Ignore(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		e.Validate()
+		if e.Validate() == nil {
+			b.FailNow()
+		}
 	}
 }
 
@@ -152,7 +152,10 @@ func BenchmarkEmployee_Error_Use(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_ = e.Validate().Error()
+		msg := e.Validate().Error()
+		if msg == "" {
+			b.FailNow()
+		}
 	}
 }
 
@@ -170,6 +173,8 @@ func BenchmarkEmployee_Success(b *testing.B) {
 
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		e.Validate()
+		if e.Validate() != nil {
+			b.FailNow()
+		}
 	}
 }

@@ -16,9 +16,6 @@ type ValidationError struct {
 }
 
 func (e ValidationError) Error() string {
-	if len(e.Errors) == 0 {
-		return ""
-	}
 	msg := make([]string, 0, len(e.Errors))
 	for _, q := range e.Errors {
 		msg = append(msg, q.Error())
