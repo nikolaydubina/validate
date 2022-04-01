@@ -3,6 +3,7 @@ package validate
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"golang.org/x/exp/constraints"
 )
@@ -37,6 +38,7 @@ func All(vs ...Validatable) error {
 }
 
 type Min[T constraints.Ordered] struct {
+	Name  string
 	Value T
 	Min   T
 }
@@ -49,10 +51,11 @@ func (s Min[T]) Validate() error {
 }
 
 func (s Min[T]) Error() string {
-	return fmt.Sprintf("(%v) smaller than min (%v)", s.Value, s.Min)
+	return fmt.Sprintf("%s(%v) smaller than min(%v)", s.Name, s.Value, s.Min)
 }
 
 type Max[T constraints.Ordered] struct {
+	Name  string
 	Value T
 	Max   T
 }
@@ -65,23 +68,11 @@ func (s Max[T]) Validate() error {
 }
 
 func (s Max[T]) Error() string {
-	return fmt.Sprintf("(%v) higher than max (%v)", s.Value, s.Max)
-}
-
-type MinMax[T constraints.Ordered] struct {
-	Value T
-	Min   T
-	Max   T
-}
-
-func (s MinMax[T]) Validate() error {
-	return All(
-		Max[T]{Value: s.Value, Max: s.Max},
-		Min[T]{Value: s.Value, Min: s.Min},
-	)
+	return fmt.Sprintf("%s(%v) higher than max(%v)", s.Name, s.Value, s.Max)
 }
 
 type OneOf[T comparable] struct {
+	Name   string
 	Value  T
 	Values []T
 }
@@ -96,5 +87,39 @@ func (s OneOf[T]) Validate() error {
 }
 
 func (s OneOf[T]) Error() string {
-	return fmt.Sprintf("(%v) is not in %v", s.Value, s.Values)
+	return fmt.Sprintf("%s(%v) is not in %v", s.Name, s.Value, s.Values)
+}
+
+type Before struct {
+	Name  string
+	Value time.Time
+	Time  time.Time
+}
+
+func (s Before) Validate() error {
+	if !s.Value.Before(s.Time) {
+		return s
+	}
+	return nil
+}
+
+func (s Before) Error() string {
+	return fmt.Sprintf("%s(%v) is not before (%v)", s.Name, s.Value, s.Time)
+}
+
+type After struct {
+	Name  string
+	Value time.Time
+	Time  time.Time
+}
+
+func (s After) Validate() error {
+	if !s.Value.After(s.Time) {
+		return s
+	}
+	return nil
+}
+
+func (s After) Error() string {
+	return fmt.Sprintf("%s(%v) is not after (%v)", s.Name, s.Value, s.Time)
 }

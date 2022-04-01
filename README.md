@@ -1,6 +1,6 @@
 # 🥬 validate. simply.
 
-> no reflection. no gencode. hierarchical and extendable. fairly fast. 100LOC. generics.
+> no reflection. no gencode. hierarchical and extendable. fairly fast. ~100LOC. generics.
 
 [![codecov](https://codecov.io/gh/nikolaydubina/validate/branch/main/graph/badge.svg?token=76JC6fX7DP)](https://codecov.io/gh/nikolaydubina/validate)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/validate.svg)](https://pkg.go.dev/github.com/nikolaydubina/validate)
@@ -69,6 +69,11 @@ func (s Color) Validate() error {
 }
 ```
 
+Example error message:
+```
+name(Bob) is not in [Zeus Hera];age(101) is not in [35 55];color wrong value(orange), expected([red green blue]);(Berkeley) is not in [KAIST Stanford];salary(256.99) higher than max(123.456);duration(10h0m0s) higher than max(1h0m0s);birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC);vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)
+```
+
 ## Implementation Details
 
 It is notable that printing error takes lots of time. 
@@ -91,17 +96,17 @@ goos: darwin
 goarch: amd64
 pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
-BenchmarkEmployee_Error_Use-10                   	 4381866	      2750 ns/op	    1856 B/op	      62 allocs/op
-BenchmarkEmployee_Error_Ignore-10                	 9370138	      1286 ns/op	    1120 B/op	      39 allocs/op
-BenchmarkEmployee_Success-10                     	31928192	       374 ns/op	     376 B/op	      15 allocs/op
-BenchmarkEmployeeSimple_Error_Use-10             	 7597821	      1580 ns/op	    1056 B/op	      39 allocs/op
-BenchmarkEmployeeSimple_Error_Ignore-10          	21584463	       548 ns/op	     568 B/op	      22 allocs/op
-BenchmarkEmployeeSimple_Success-10               	51159644	       233 ns/op	     240 B/op	      10 allocs/op
-BenchmarkEmployeeNoContainers_Error_Use-10       	14266191	       829 ns/op	     520 B/op	      23 allocs/op
-BenchmarkEmployeeNoContainers_Error_Ignore-10    	32474282	       369 ns/op	     296 B/op	      15 allocs/op
-BenchmarkEmployeeNoContainers_Success-10         	87722424	       137 ns/op	     112 B/op	       6 allocs/op
+BenchmarkEmployee_Error_Message-10                	 3430935	      3500 ns/op	    2376 B/op	      63 allocs/op
+BenchmarkEmployee_Error-10                        	 9050138	      1319 ns/op	    1344 B/op	      34 allocs/op
+BenchmarkEmployee_Success-10                      	25547962	       482.1 ns/op	     552 B/op	      14 allocs/op
+BenchmarkEmployeeSimple_Error_Message-10          	 9065190	      1322 ns/op	     880 B/op	      27 allocs/op
+BenchmarkEmployeeSimple_Error-10                  	29836638	       398.7 ns/op	     504 B/op	      13 allocs/op
+BenchmarkEmployeeSimple_Success-10                	65272360	       181.7 ns/op	     224 B/op	       6 allocs/op
+BenchmarkEmployeeNoContainers_Error_Message-10    	27753966	       432.7 ns/op	     216 B/op	       9 allocs/op
+BenchmarkEmployeeNoContainers_Error-10            	73233061	       163.1 ns/op	     136 B/op	       5 allocs/op
+BenchmarkEmployeeNoContainers_Success-10          	147265029	        81.30 ns/op	      64 B/op	       2 allocs/op
 PASS
-ok  	github.com/nikolaydubina/validate	116.387s
+ok  	github.com/nikolaydubina/validate	124.499s
 ```
 
 ## Appendix A: Comparison to other validators
