@@ -15,16 +15,22 @@ type Employee struct {
 	Color     Color     // custom func Validate()
 	Education Education // nested with Validate()
 	Salary    float64
+	Locations []string
+	GoodFood  map[string]bool
 }
 
 func (s Employee) Validate() error {
 	return validate.All(
 		validate.OneOf[string]{Value: s.Name, Values: []string{"Zeus", "Hera"}},
+		validate.MaxLenStr{Value: s.Name, MaxLen: 2},
 		validate.OneOf[int]{Value: s.Age, Values: []int{35, 55}},
 		validate.MinMax[int]{Value: s.Age, Min: 10, Max: 100}, // same field validated again
 		s.Color,
+		validate.OneOf[Color]{Value: s.Color, Values: []Color{Red, Green, Blue}},
 		s.Education,
 		validate.MinMax[float64]{Value: s.Salary, Min: -10, Max: 123.456},
+		validate.MinLen[string]{Value: s.Locations, MinLen: 2},
+		validate.MaxLenMap[string, bool]{Value: s.GoodFood, MaxLen: 2},
 	)
 }
 
@@ -81,8 +87,13 @@ func TestEmployee_Error(t *testing.T) {
 					SchoolName: "Berkeley",
 				},
 				Salary: 256.99,
+				GoodFood: map[string]bool{
+					"apple":    true,
+					"orange":   false,
+					"cucumber": false,
+				},
 			},
-			err: errors.New("(Bob) is not in [Zeus Hera];(101) is not in [35 55];(101) higher than max (100);wrong value(orange), expected([red green blue]);(Berkeley) is not in [KAIST Stanford];(256.99) higher than max (123.456)"),
+			err: errors.New("(Bob) is not in [Zeus Hera];(101) is not in [35 55];(101) higher than max (100);wrong value(orange), expected([red green blue]);(orange) is not in [red green blue];(Berkeley) is not in [KAIST Stanford];(256.99) higher than max (123.456)"),
 		},
 		{
 			e: Employee{
@@ -95,7 +106,7 @@ func TestEmployee_Error(t *testing.T) {
 				},
 				Salary: 256.99,
 			},
-			err: errors.New("(Bob) is not in [Zeus Hera];(-10) is not in [35 55];(-10) smaller than min (10);wrong value(orange), expected([red green blue]);(Berkeley) is not in [KAIST Stanford];(256.99) higher than max (123.456)"),
+			err: errors.New("(Bob) is not in [Zeus Hera];(-10) is not in [35 55];(-10) smaller than min (10);wrong value(orange), expected([red green blue]);(orange) is not in [red green blue];(Berkeley) is not in [KAIST Stanford];(256.99) higher than max (123.456)"),
 		},
 	}
 	for i, tc := range tests {
@@ -118,7 +129,8 @@ func TestEmployee_Success(t *testing.T) {
 				Duration:   75,
 				SchoolName: "KAIST",
 			},
-			Salary: 79,
+			Salary:    79,
+			Locations: []string{"Paris", "Singapore"},
 		},
 	}
 	for i, tc := range tests {

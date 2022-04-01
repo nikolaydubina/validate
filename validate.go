@@ -98,3 +98,138 @@ func (s OneOf[T]) Validate() error {
 func (s OneOf[T]) Error() string {
 	return fmt.Sprintf("(%v) is not in %v", s.Value, s.Values)
 }
+
+type MinLen[T any] struct {
+	Value  []T
+	MinLen int
+}
+
+func (s MinLen[T]) Validate() error {
+	if len(s.Value) < s.MinLen {
+		return s
+	}
+	return nil
+}
+
+func (s MinLen[T]) Error() string {
+	return fmt.Sprintf("len(%d) is smaller than min len(%d)", len(s.Value), s.MinLen)
+}
+
+type MaxLen[T any] struct {
+	Value  []T
+	MaxLen int
+}
+
+func (s MaxLen[T]) Validate() error {
+	if len(s.Value) > s.MaxLen {
+		return s
+	}
+	return nil
+}
+
+func (s MaxLen[T]) Error() string {
+	return fmt.Sprintf("len(%d) is higher than max len(%d)", len(s.Value), s.MaxLen)
+}
+
+type MinMaxLen[T any] struct {
+	Value  []T
+	MinLen int
+	MaxLen int
+}
+
+func (s MinMaxLen[T]) Validate() error {
+	return All(
+		MinLen[T]{Value: s.Value, MinLen: s.MinLen},
+		MaxLen[T]{Value: s.Value, MaxLen: s.MaxLen},
+	)
+}
+
+type MinLenMap[K comparable, V any] struct {
+	Value  map[K]V
+	MinLen int
+}
+
+func (s MinLenMap[T, K]) Validate() error {
+	if len(s.Value) < s.MinLen {
+		return s
+	}
+	return nil
+}
+
+func (s MinLenMap[T, K]) Error() string {
+	return fmt.Sprintf("len(%d) is smaller than min len(%d)", len(s.Value), s.MinLen)
+}
+
+type MaxLenMap[K comparable, V any] struct {
+	Value  map[K]V
+	MaxLen int
+}
+
+func (s MaxLenMap[K, V]) Validate() error {
+	if len(s.Value) > s.MaxLen {
+		return s
+	}
+	return nil
+}
+
+func (s MaxLenMap[K, V]) Error() string {
+	return fmt.Sprintf("len(%d) is higher than max len(%d)", len(s.Value), s.MaxLen)
+}
+
+type MinMaxLenMap[K comparable, V any] struct {
+	Value  map[K]V
+	MinLen int
+	MaxLen int
+}
+
+func (s MinMaxLenMap[K, V]) Validate() error {
+	return All(
+		MinLenMap[K, V]{Value: s.Value, MinLen: s.MinLen},
+		MinMaxLenMap[K, V]{Value: s.Value, MaxLen: s.MaxLen},
+	)
+}
+
+type MinLenStr struct {
+	Value  string
+	MinLen int
+}
+
+func (s MinLenStr) Validate() error {
+	if len(s.Value) < s.MinLen {
+		return s
+	}
+	return nil
+}
+
+func (s MinLenStr) Error() string {
+	return fmt.Sprintf("len(%d) is smaller than min len(%d)", len(s.Value), s.MinLen)
+}
+
+type MaxLenStr struct {
+	Value  string
+	MaxLen int
+}
+
+func (s MaxLenStr) Validate() error {
+	if len(s.Value) > s.MaxLen {
+		return s
+	}
+	return nil
+}
+
+func (s MaxLenStr) Error() string {
+	return fmt.Sprintf("len(%d) is higher than max len(%d)", len(s.Value), s.MaxLen)
+}
+
+type MinMaxLenStr struct {
+	Value  string
+	MinLen int
+	MaxLen int
+}
+
+func (s MinMaxLenStr) Validate() error {
+	return All(
+		MinLenStr{Value: s.Value, MinLen: s.MinLen},
+		MinMaxLenStr{Value: s.Value, MaxLen: s.MaxLen},
+	)
+}

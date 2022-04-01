@@ -25,6 +25,7 @@ func (s Employee) Validate() error {
 		validate.OneOf[int]{Value: s.Age, Values: []int{35, 55}},
 		validate.MinMax[int]{Value: s.Age, Min: 10, Max: 100}, // same field validated again
 		s.Color,
+		validate.OneOf[Color]{Value: s.Color, Values: []Color{Red, Green, Blue}},
 		s.Education,
 		validate.MinMax[float64]{Value: s.Salary, Min: -10, Max: 123.456},
 	)
