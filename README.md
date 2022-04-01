@@ -12,21 +12,27 @@ Your type has to satisfy `Validate() error` interface and you are good to go!
 ```go
 // Employee is example of struct with validatable fields and nested structure
 type Employee struct {
-	Name      string
-	Age       int
-	Color     Color     // custom func Validate()
-	Education Education // nested with Validate()
-	Salary    float64
+	Name          string
+	Age           int
+	Color         Color     // custom func Validate()
+	Education     Education // nested with Validate()
+	Salary        float64
+	Experience    time.Duration
+	Birthday      time.Time
+	VacationStart time.Time
 }
 
 func (s Employee) Validate() error {
 	return validate.All(
-		validate.OneOf[string]{Value: s.Name, Values: []string{"Zeus", "Hera"}},
-		validate.OneOf[int]{Value: s.Age, Values: []int{35, 55}},
-		validate.MinMax[int]{Value: s.Age, Min: 10, Max: 100}, // same field validated again
+		validate.OneOf[string]{Name: "name", Value: s.Name, Values: []string{"Zeus", "Hera"}},
+		validate.OneOf[int]{Name: "age", Value: s.Age, Values: []int{35, 55}},
+		validate.Min[int]{Name: "age", Value: s.Age, Min: 10}, // same field validated again
 		s.Color,
 		s.Education,
-		validate.MinMax[float64]{Value: s.Salary, Min: -10, Max: 123.456},
+		validate.Max[float64]{Name: "salary", Value: s.Salary, Max: 123.456},
+		validate.Max[time.Duration]{Name: "duration", Value: s.Experience, Max: time.Duration(1) * time.Hour},
+		validate.After{Name: "birthday", Value: s.Birthday, Time: time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)},
+		validate.Before{Name: "vacation_start", Value: s.VacationStart, Time: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)},
 	)
 }
 
