@@ -104,13 +104,13 @@ pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
 BenchmarkEmployee_Error_Message-10                	 3430935	      3500 ns/op	    2376 B/op	      63 allocs/op
 BenchmarkEmployee_Error-10                        	 9050138	      1319 ns/op	    1344 B/op	      34 allocs/op
-BenchmarkEmployee_Success-10                      	25547962	       482.1 ns/op	     552 B/op	      14 allocs/op
+BenchmarkEmployee_Success-10                      	25547962	       482 ns/op	     552 B/op	      14 allocs/op
 BenchmarkEmployeeSimple_Error_Message-10          	 9065190	      1322 ns/op	     880 B/op	      27 allocs/op
-BenchmarkEmployeeSimple_Error-10                  	29836638	       398.7 ns/op	     504 B/op	      13 allocs/op
-BenchmarkEmployeeSimple_Success-10                	65272360	       181.7 ns/op	     224 B/op	       6 allocs/op
-BenchmarkEmployeeNoContainers_Error_Message-10    	27753966	       432.7 ns/op	     216 B/op	       9 allocs/op
-BenchmarkEmployeeNoContainers_Error-10            	73233061	       163.1 ns/op	     136 B/op	       5 allocs/op
-BenchmarkEmployeeNoContainers_Success-10          	147265029	        81.30 ns/op	      64 B/op	       2 allocs/op
+BenchmarkEmployeeSimple_Error-10                  	29836638	       398 ns/op	     504 B/op	      13 allocs/op
+BenchmarkEmployeeSimple_Success-10                	65272360	       181 ns/op	     224 B/op	       6 allocs/op
+BenchmarkEmployeeNoContainers_Error_Message-10    	27753966	       432 ns/op	     216 B/op	       9 allocs/op
+BenchmarkEmployeeNoContainers_Error-10            	73233061	       163 ns/op	     136 B/op	       5 allocs/op
+BenchmarkEmployeeNoContainers_Success-10          	147265029	        81 ns/op	      64 B/op	       2 allocs/op
 PASS
 ok  	github.com/nikolaydubina/validate	124.499s
 ```
