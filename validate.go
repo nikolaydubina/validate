@@ -9,16 +9,14 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type errMultiple struct {
-	Errors []error
-}
+type errMultiple []error
 
 func (e errMultiple) Error() string {
-	msg := make([]string, 0, len(e.Errors))
-	for _, q := range e.Errors {
+	msg := make([]string, 0, len(e))
+	for _, q := range e {
 		msg = append(msg, q.Error())
 	}
-	return "validate: " + strconv.Itoa(len(e.Errors)) + " errors: [" + strings.Join(msg, "; ") + "]"
+	return "validate: " + strconv.Itoa(len(e)) + " errors: [" + strings.Join(msg, "; ") + "]"
 }
 
 func All(vs ...error) error {
@@ -29,7 +27,7 @@ func All(vs ...error) error {
 		}
 	}
 	if len(errs) > 0 {
-		return errMultiple{Errors: errs}
+		return errMultiple(errs)
 	}
 	return nil
 }
