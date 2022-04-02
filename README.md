@@ -81,21 +81,25 @@ validate: 8 errors: [name(Bob) not in [Zeus Hera]; age(101) not in [35 55]; colo
 
 ## Implementation Details
 
-It is notable that printing error takes lots of time. 
+Printing error takes a lot of time. 
 Thus, it is good to delay constructor of error message as much as possible.
+And sometimes user code does not need to print error at all and only `nil` check is performed.
 This is done by moving construction of error message in `Error` methods.
 
-It is advisable to avoid memory allocs and creation of structures.
-Such in case of success flow, we ideally will not create error structure at all.
+It is advisable to avoid memory allocations and creation of structures.
+Such in case of success flow, we ideally will not have any memory allocations at all.
 This is why we make validators as functions and call them in chain.
-We do not delay or wrap validate function call.
+We do not delay nor wrap validation function calls.
 We use function arguments as storage for validation parameters, they are simple params and likely to be on stack which is fast.
 For example, for `OneOf` we are using variadic arguments.
-Other alternative is to use arrays.
-Also, hopefully Go compiler can detect that argument to function is constant at compile time and optimize that into assembly.
-This can also has potential to avoid memory allocation subject to compiler optimizations.
+Other alternative is to use arrays since in Go they are on stack as well.
 
-If possible to define your own validators with switch cases that are expected to be even faster.
+We also hope Go compiler
+- can detect that argument to function is constant and inline it in assembly or stack
+- does not use expensive memory for variadic parameters
+- can inline functions
+
+Defining custom validators with `switch` is expected to be even faster.
 
 ## Benchmarks
 
