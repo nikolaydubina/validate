@@ -23,15 +23,15 @@ type Employee struct {
 
 func (s Employee) Validate() error {
 	return validate.All(
-		validate.OneOf[string]{Name: "name", Value: s.Name, Values: []string{"Zeus", "Hera"}},
-		validate.OneOf[int]{Name: "age", Value: s.Age, Values: []int{35, 55}},
-		validate.Min[int]{Name: "age", Value: s.Age, Min: 10}, // same field validated again
-		s.Color,
-		s.Education,
-		validate.Max[float64]{Name: "salary", Value: s.Salary, Max: 123.456},
-		validate.Max[time.Duration]{Name: "duration", Value: s.Experience, Max: time.Duration(1) * time.Hour},
-		validate.After{Name: "birthday", Value: s.Birthday, Time: time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)},
-		validate.Before{Name: "vacation_start", Value: s.VacationStart, Time: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)},
+		validate.OneOf("name", s.Name, "Zeus", "Hera"),
+		validate.OneOf("age", s.Age, 35, 55),
+		validate.Min("age", s.Age, 10), // same field validated again
+		s.Color.Validate(),
+		s.Education.Validate(),
+		validate.Max("salary", s.Salary, 123.456),
+		validate.Max("duration", s.Experience, time.Duration(1)*time.Hour),
+		validate.After("birthday", s.Birthday, time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)),
+		validate.Before("vacation_start", s.VacationStart, time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
 	)
 }
 
@@ -46,8 +46,8 @@ func (e Education) Validate() error {
 		return errors.New("my special error")
 	}
 	return validate.All(
-		validate.Min[int]{Value: e.Duration, Min: 10},
-		validate.OneOf[string]{Value: e.SchoolName, Values: []string{"KAIST", "Stanford"}},
+		validate.Min("", e.Duration, 10),
+		validate.OneOf("", e.SchoolName, "KAIST", "Stanford"),
 	)
 }
 
@@ -92,7 +92,7 @@ func TestEmployee_Error(t *testing.T) {
 				Birthday:      time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC),
 				VacationStart: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
 			},
-			err: errors.New("validate: 8 errors: [name(Bob) is not in [Zeus Hera]; age(101) is not in [35 55]; color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) is not in [KAIST Stanford]]; salary(256.99) higher than max(123.456); duration(10h0m0s) higher than max(1h0m0s); birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC); vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)]"),
+			err: errors.New("validate: 8 errors: [name(Bob) not in [Zeus Hera]; age(101) not in [35 55]; color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) not in [KAIST Stanford]]; salary(256.99) higher than max (123.456); duration(10h0m0s) higher than max (1h0m0s); birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC); vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)]"),
 		},
 		{
 			e: Employee{
@@ -105,7 +105,7 @@ func TestEmployee_Error(t *testing.T) {
 				},
 				Salary: 256.99,
 			},
-			err: errors.New("validate: 7 errors: [name(Bob) is not in [Zeus Hera]; age(-10) is not in [35 55]; age(-10) smaller than min(10); color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) is not in [KAIST Stanford]]; salary(256.99) higher than max(123.456); birthday(0001-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC)]"),
+			err: errors.New("validate: 7 errors: [name(Bob) not in [Zeus Hera]; age(-10) not in [35 55]; age(-10) smaller than min (10); color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) not in [KAIST Stanford]]; salary(256.99) higher than max (123.456); birthday(0001-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC)]"),
 		},
 	}
 	for i, tc := range tests {
@@ -211,10 +211,10 @@ type EmployeeSimple struct {
 
 func (s EmployeeSimple) Validate() error {
 	return validate.All(
-		validate.OneOf[string]{Value: s.Name, Values: []string{"Zeus", "Hera"}},
-		validate.OneOf[int]{Value: s.Age, Values: []int{35, 55}},
-		validate.Min[int]{Value: s.Age, Min: 10},
-		validate.Max[float64]{Value: s.Salary, Max: 123.456},
+		validate.OneOf("", s.Name, "Zeus", "Hera"),
+		validate.OneOf("", s.Age, 35, 55),
+		validate.Min("", s.Age, 10),
+		validate.Max("", s.Salary, 123.456),
 	)
 }
 func BenchmarkEmployeeSimple_Error_Message(b *testing.B) {
@@ -270,8 +270,8 @@ type EmployeeNoContainers struct {
 
 func (s EmployeeNoContainers) Validate() error {
 	return validate.All(
-		validate.Min[int]{Value: s.Age, Min: 10},
-		validate.Max[float64]{Value: s.Salary, Max: 123.456},
+		validate.Min("", s.Age, 10),
+		validate.Max("", s.Salary, 123.456),
 	)
 }
 func BenchmarkEmployeeNoContainers_Error_Message(b *testing.B) {

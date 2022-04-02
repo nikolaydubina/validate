@@ -9,15 +9,24 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type Validatable interface {
-	Validate() error
+func All(vs ...error) error {
+	var errs []error
+	for _, err := range vs {
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+	if len(errs) > 0 {
+		return errMultiple{Errors: errs}
+	}
+	return nil
 }
 
-type ValidationError struct {
+type errMultiple struct {
 	Errors []error
 }
 
-func (e ValidationError) Error() string {
+func (e errMultiple) Error() string {
 	msg := make([]string, 0, len(e.Errors))
 	for _, q := range e.Errors {
 		msg = append(msg, q.Error())
@@ -25,102 +34,60 @@ func (e ValidationError) Error() string {
 	return "validate: " + strconv.Itoa(len(e.Errors)) + " errors: [" + strings.Join(msg, "; ") + "]"
 }
 
-func All(vs ...Validatable) error {
-	var errs []error
-	for _, f := range vs {
-		if err := f.Validate(); err != nil {
-			errs = append(errs, err)
-		}
+type errSingle[T any] struct {
+	Name string
+	Val  T
+	To   T
+	Op   string
+}
+
+func (e errSingle[T]) Error() string {
+	return fmt.Sprintf("%s(%v) %s (%v)", e.Name, e.Val, e.Op, e.To)
+}
+
+func Min[T constraints.Ordered](name string, v, min T) error {
+	if v > min {
+		return nil
 	}
-	if len(errs) > 0 {
-		return ValidationError{Errors: errs}
+	return errSingle[T]{Name: name, Val: v, To: min, Op: "smaller than min"}
+}
+
+func Max[T constraints.Ordered](name string, v, max T) error {
+	if v < max {
+		return nil
 	}
-	return nil
+	return errSingle[T]{Name: name, Val: v, To: max, Op: "higher than max"}
 }
 
-type Min[T constraints.Ordered] struct {
-	Name  string
-	Value T
-	Min   T
-}
-
-func (s Min[T]) Validate() error {
-	if s.Value < s.Min {
-		return s
+func Before(name string, t, before time.Time) error {
+	if t.Before(before) {
+		return nil
 	}
-	return nil
+	return errSingle[time.Time]{Name: name, Val: t, To: before, Op: "is not before"}
 }
 
-func (s Min[T]) Error() string {
-	return fmt.Sprintf("%s(%v) smaller than min(%v)", s.Name, s.Value, s.Min)
-}
-
-type Max[T constraints.Ordered] struct {
-	Name  string
-	Value T
-	Max   T
-}
-
-func (s Max[T]) Validate() error {
-	if s.Value > s.Max {
-		return s
+func After(name string, t, after time.Time) error {
+	if t.After(after) {
+		return nil
 	}
-	return nil
+	return errSingle[time.Time]{Name: name, Val: t, To: after, Op: "is not after"}
 }
 
-func (s Max[T]) Error() string {
-	return fmt.Sprintf("%s(%v) higher than max(%v)", s.Name, s.Value, s.Max)
+type errOneOf[T any] struct {
+	Name    string
+	Val     T
+	Options []T
 }
 
-type OneOf[T comparable] struct {
-	Name   string
-	Value  T
-	Values []T
+func (e errOneOf[T]) Error() string {
+	return fmt.Sprintf("%s(%v) not in %v", e.Name, e.Val, e.Options)
 }
 
-func (s OneOf[T]) Validate() error {
-	for _, q := range s.Values {
-		if q == s.Value {
+func OneOf[T comparable](name string, v T, options ...T) error {
+	for _, q := range options {
+		if v == q {
 			return nil
 		}
 	}
-	return s
-}
-
-func (s OneOf[T]) Error() string {
-	return fmt.Sprintf("%s(%v) is not in %v", s.Name, s.Value, s.Values)
-}
-
-type Before struct {
-	Name  string
-	Value time.Time
-	Time  time.Time
-}
-
-func (s Before) Validate() error {
-	if !s.Value.Before(s.Time) {
-		return s
-	}
-	return nil
-}
-
-func (s Before) Error() string {
-	return s.Name + "(" + s.Value.String() + ") is not before (" + s.Time.String() + ")"
-}
-
-type After struct {
-	Name  string
-	Value time.Time
-	Time  time.Time
-}
-
-func (s After) Validate() error {
-	if !s.Value.After(s.Time) {
-		return s
-	}
-	return nil
-}
-
-func (s After) Error() string {
-	return s.Name + "(" + s.Value.String() + ") is not after (" + s.Time.String() + ")"
+	return errOneOf[T]{Name: name, Val: v, Options: options}
 }

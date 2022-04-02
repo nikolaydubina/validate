@@ -24,15 +24,15 @@ type Employee struct {
 
 func (s Employee) Validate() error {
 	return validate.All(
-		validate.OneOf[string]{Name: "name", Value: s.Name, Values: []string{"Zeus", "Hera"}},
-		validate.OneOf[int]{Name: "age", Value: s.Age, Values: []int{35, 55}},
-		validate.Min[int]{Name: "age", Value: s.Age, Min: 10}, // same field validated again
-		s.Color,
-		s.Education,
-		validate.Max[float64]{Name: "salary", Value: s.Salary, Max: 123.456},
-		validate.Max[time.Duration]{Name: "duration", Value: s.Experience, Max: time.Duration(1) * time.Hour},
-		validate.After{Name: "birthday", Value: s.Birthday, Time: time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)},
-		validate.Before{Name: "vacation_start", Value: s.VacationStart, Time: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)},
+		validate.OneOf("name", s.Name, "Zeus", "Hera"),
+		validate.OneOf("age", s.Age, 35, 55),
+		validate.Min("age", s.Age, 10), // same field validated again
+		s.Color.Validate(),
+		s.Education.Validate(),
+		validate.Max("salary", s.Salary, 123.456),
+		validate.Max("duration", s.Experience, time.Duration(1)*time.Hour),
+		validate.After("birthday", s.Birthday, time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)),
+		validate.Before("vacation_start", s.VacationStart, time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
 	)
 }
 
@@ -77,7 +77,7 @@ func (s Color) Validate() error {
 
 Example error message:
 ```
-validate: 8 errors: [name(Bob) is not in [Zeus Hera]; age(101) is not in [35 55]; color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) is not in [KAIST Stanford]]; salary(256.99) higher than max(123.456); duration(10h0m0s) higher than max(1h0m0s); birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC); vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)]
+validate: 8 errors: [name(Bob) not in [Zeus Hera]; age(101) not in [35 55]; color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) not in [KAIST Stanford]]; salary(256.99) higher than max (123.456); duration(10h0m0s) higher than max (1h0m0s); birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC); vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)]
 ```
 
 ## Implementation Details
@@ -86,16 +86,76 @@ It is notable that printing error takes lots of time.
 Thus, it is good to delay constructor of error message as much as possible.
 This is done by moving construction of error message in `Error` methods.
 
-We already have in validators everything needed to format error message, which is why reusing them as error containers.
+It is advisable to avoid memory allocs and creation of structures.
+Such in case of success flow, we ideally will not create error structure at all.
+This is why we make validators as functions and call them in chain.
+We do not delay or wrap validate function call.
+We use function arguments as storage for validation parameters, they are simple params and likely to be on stack which is fast.
+For example, for `OneOf` we are using variadic arguments.
+Other alternative is to use arrays.
+Also, hopefully Go compiler can detect that argument to function is constant at compile time and optimize that into assembly.
+This can also has potential to avoid memory allocation subject to compiler optimizations.
 
-Most of time and memory allocations happen in validators that use containers.
-Thus it is advised to avoid `OneOf` and alike.
-If possible, define your own validators with arrays and not slices or maps.
-Custom validators with switch cases are expected to be even more performant.
-As of 2022-04-01, Go does not support generic arrays. Otherwise, we would use arrays.
+If possible to define your own validators with switch cases that are expected to be even faster.
 
 ## Benchmarks
 
+```
+$ go test -bench=. -benchtime=10s -benchmem ./...
+goos: darwin
+goarch: amd64
+pkg: github.com/nikolaydubina/validate
+cpu: VirtualApple @ 2.50GHz
+BenchmarkEmployee_Error_Message-10                	   3744121	      3229 ns/op	    2376 B/op	      56 allocs/op
+BenchmarkEmployee_Error-10                        	  12533948	       958 ns/op	     904 B/op	      23 allocs/op
+BenchmarkEmployee_Success-10                      	 100000000	       115 ns/op	      80 B/op	       3 allocs/op
+BenchmarkEmployeeSimple_Error_Message-10          	   9488436	      1263 ns/op	     840 B/op	      25 allocs/op
+BenchmarkEmployeeSimple_Error-10                  	  44261380	       270 ns/op	     344 B/op	       9 allocs/op
+BenchmarkEmployeeSimple_Success-10                	 243491635	        49 ns/op	      48 B/op	       2 allocs/op
+BenchmarkEmployeeNoContainers_Error_Message-10    	  28089966	       427 ns/op	     248 B/op	       9 allocs/op
+BenchmarkEmployeeNoContainers_Error-10            	 142881793	        85 ns/op	      88 B/op	       3 allocs/op
+BenchmarkEmployeeNoContainers_Success-10        	1000000000	         4 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	github.com/nikolaydubina/validate	120.565s
+```
+
+## Appendix A: Comparison to other validators
+
+#### `github.com/go-playground/validator`
+
+It uses struct tags and reflection.
+Binding custom validations require defining validation function with special name and using interface typecast then registering this to validator instance.
+
+It has instance of validator that is reused.
+
+Its speed is mostly few hundred ns and up to 1µs.
+Its memory allocation can be 0 and reaches up to few dozen.
+It wins in both speed and memory allocation.
+
+## Appendix B: Wrapping validators into interface
+
+Early version of this library was wrapping each validation operation into a `interface { Validate() error }`.
+In this approach, we already had in validators everything needed to format error message, which is why we were reusing them as error containers.
+However, there were few drawbacks.
+
+Code looked more verbose:
+```go
+func (s Employee) Validate() error {
+	return validate.All(
+		validate.OneOf[string]{Name: "name", Value: s.Name, Values: []string{"Zeus", "Hera"}},
+		validate.OneOf[int]{Name: "age", Value: s.Age, Values: []int{35, 55}},
+		validate.Min[int]{Name: "age", Value: s.Age, Min: 10}, // same field validated again
+		s.Color,
+		s.Education,
+		validate.Max[float64]{Name: "salary", Value: s.Salary, Max: 123.456},
+		validate.Max[time.Duration]{Name: "duration", Value: s.Experience, Max: time.Duration(1) * time.Hour},
+		validate.After{Name: "birthday", Value: s.Birthday, Time: time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)},
+		validate.Before{Name: "vacation_start", Value: s.VacationStart, Time: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)},
+	)
+}
+```
+
+Performance was slightly worse for error case, and much worse for success case:
 ```
 $ go test -bench=. -benchtime=10s -benchmem ./...
 goos: darwin
@@ -115,15 +175,6 @@ PASS
 ok  	github.com/nikolaydubina/validate	124.950s
 ```
 
-## Appendix A: Comparison to other validators
+## Reference
 
-#### `github.com/go-playground/validator`
-
-It uses struct tags and reflection.
-Binding custom validations require defining validation function with special name and using interface typecast then registering this to validator instance.
-
-It has instance of validator that is reused.
-
-Its speed is mostly few hundred ns and up to 1µs.
-Its memory allocation can be 0 and reaches up to few dozen.
-It wins in both speed and memory allocation.
+- As of `2022-04-01`, Go does not support generic arrays.
