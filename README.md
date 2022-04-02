@@ -1,13 +1,12 @@
 # 🥬 validate. simply.
 
-> no reflection. no gencode. hierarchical and extendable. fairly fast. ~100LOC. generics.
+> no reflection. no gencode. hierarchical and extendable. fast. ~100LOC. generics.
 
 [![codecov](https://codecov.io/gh/nikolaydubina/validate/branch/main/graph/badge.svg?token=76JC6fX7DP)](https://codecov.io/gh/nikolaydubina/validate)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/validate.svg)](https://pkg.go.dev/github.com/nikolaydubina/validate)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/validate)](https://goreportcard.com/report/github.com/nikolaydubina/validate)
 
 This is convenient when you have custom validation and nested structures.  
-Your type has to satisfy `Validate() error` interface and you are good to go!
 
 ```go
 // Employee is example of struct with validatable fields and nested structure
@@ -130,7 +129,6 @@ It has instance of validator that is reused.
 
 Its speed is mostly few hundred ns and up to 1µs.
 Its memory allocation can be 0 and reaches up to few dozen.
-It wins in both speed and memory allocation.
 
 ## Appendix B: Wrapping validators into interface
 
