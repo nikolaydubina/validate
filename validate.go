@@ -2,6 +2,7 @@ package validate
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,7 +22,7 @@ func (e ValidationError) Error() string {
 	for _, q := range e.Errors {
 		msg = append(msg, q.Error())
 	}
-	return strings.Join(msg, ";")
+	return "validate: " + strconv.Itoa(len(e.Errors)) + " errors: [" + strings.Join(msg, "; ") + "]"
 }
 
 func All(vs ...Validatable) error {

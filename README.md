@@ -77,7 +77,7 @@ func (s Color) Validate() error {
 
 Example error message:
 ```
-name(Bob) is not in [Zeus Hera];age(101) is not in [35 55];color wrong value(orange), expected([red green blue]);(Berkeley) is not in [KAIST Stanford];salary(256.99) higher than max(123.456);duration(10h0m0s) higher than max(1h0m0s);birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC);vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)
+validate: 8 errors: [name(Bob) is not in [Zeus Hera]; age(101) is not in [35 55]; color wrong value(orange), expected([red green blue]); validate: 1 errors: [(Berkeley) is not in [KAIST Stanford]]; salary(256.99) higher than max(123.456); duration(10h0m0s) higher than max(1h0m0s); birthday(1984-01-01 00:00:00 +0000 UTC) is not after (1984-01-01 00:00:00 +0000 UTC); vacation_start(2025-01-01 00:00:00 +0000 UTC) is not before (2024-01-01 00:00:00 +0000 UTC)]
 ```
 
 ## Implementation Details
@@ -97,22 +97,22 @@ As of 2022-04-01, Go does not support generic arrays. Otherwise, we would use ar
 ## Benchmarks
 
 ```
-$ go test -timeout=1h -bench=. -benchtime=10s -benchmem ./...
+$ go test -bench=. -benchtime=10s -benchmem ./...
 goos: darwin
 goarch: amd64
 pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
-BenchmarkEmployee_Error_Message-10                	 3430935	      3500 ns/op	    2376 B/op	      63 allocs/op
-BenchmarkEmployee_Error-10                        	 9050138	      1319 ns/op	    1344 B/op	      34 allocs/op
-BenchmarkEmployee_Success-10                      	25547962	       482 ns/op	     552 B/op	      14 allocs/op
-BenchmarkEmployeeSimple_Error_Message-10          	 9065190	      1322 ns/op	     880 B/op	      27 allocs/op
-BenchmarkEmployeeSimple_Error-10                  	29836638	       398 ns/op	     504 B/op	      13 allocs/op
-BenchmarkEmployeeSimple_Success-10                	65272360	       181 ns/op	     224 B/op	       6 allocs/op
-BenchmarkEmployeeNoContainers_Error_Message-10    	27753966	       432 ns/op	     216 B/op	       9 allocs/op
-BenchmarkEmployeeNoContainers_Error-10            	73233061	       163 ns/op	     136 B/op	       5 allocs/op
-BenchmarkEmployeeNoContainers_Success-10          	147265029	        81 ns/op	      64 B/op	       2 allocs/op
+BenchmarkEmployee_Error_Message-10                	 3298105	      3663 ns/op	    2825 B/op	      65 allocs/op
+BenchmarkEmployee_Error-10                        	 9254660	      1291 ns/op	    1344 B/op	      34 allocs/op
+BenchmarkEmployee_Success-10                      	25155782	       475 ns/op	     552 B/op	      14 allocs/op
+BenchmarkEmployeeSimple_Error_Message-10          	 8764581	      1365 ns/op	     992 B/op	      28 allocs/op
+BenchmarkEmployeeSimple_Error-10                  	30016674	       397 ns/op	     504 B/op	      13 allocs/op
+BenchmarkEmployeeSimple_Success-10                	65274387	       184 ns/op	     224 B/op	       6 allocs/op
+BenchmarkEmployeeNoContainers_Error_Message-10    	25096866	       482 ns/op	     280 B/op	      10 allocs/op
+BenchmarkEmployeeNoContainers_Error-10            	72819344	       166 ns/op	     136 B/op	       5 allocs/op
+BenchmarkEmployeeNoContainers_Success-10          	143083858	        83 ns/op	      64 B/op	       2 allocs/op
 PASS
-ok  	github.com/nikolaydubina/validate	124.499s
+ok  	github.com/nikolaydubina/validate	125.203s
 ```
 
 ## Appendix A: Comparison to other validators
