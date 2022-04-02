@@ -1,6 +1,6 @@
 # 🥬 validate. simply.
 
-> no reflection. no gencode. hierarchical and extendable. fairly fast. ~100LOC. generics.
+> no reflection. no gencode. hierarchical and extendable. fast. ~100LOC. generics.
 
 [![codecov](https://codecov.io/gh/nikolaydubina/validate/branch/main/graph/badge.svg?token=76JC6fX7DP)](https://codecov.io/gh/nikolaydubina/validate)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/validate.svg)](https://pkg.go.dev/github.com/nikolaydubina/validate)
