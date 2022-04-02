@@ -216,7 +216,7 @@ func (s Employee) Validate() error {
 }
 ```
 
-Benchmarks:
+Performance is worse across the board:
 ```
 goos: darwin
 goarch: amd64
