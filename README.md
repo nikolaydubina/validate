@@ -130,7 +130,6 @@ It has instance of validator that is reused.
 
 Its speed is mostly few hundred ns and up to 1µs.
 Its memory allocation can be 0 and reaches up to few dozen.
-It wins in both speed and memory allocation.
 
 ## Appendix B: Wrapping validators into interface
 
