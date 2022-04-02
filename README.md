@@ -177,6 +177,64 @@ PASS
 ok  	github.com/nikolaydubina/validate	124.950s
 ```
 
+## Appendix C: Binding validator functions in map to field names
+
+It might appear that it is more efficient not to pass `name` of field in validator.
+Such it is tempting to run slice or map of functions.
+However, performance deteriorates with this approach.
+Likely this is due to compiler using stack or not efficiently inlining.
+
+Code sample:
+```go
+func All(vs map[string]error) error {
+	errs := make(map[string]error, len(vs))
+	for k, err := range vs {
+		if err != nil {
+			errs[k] = err
+		}
+	}
+	if len(errs) > 0 {
+		return errMultiple(errs)
+	}
+	return nil
+}
+
+...
+
+func (s Employee) Validate() error {
+	return validate.All(map[string]error{
+		"name":           validate.OneOf(s.Name, "Zeus", "Hera"),
+		"age":            validate.OneOf(s.Age, 35, 55),
+		"age_2":          validate.Min(s.Age, 10), // same field validated again
+		"color":          s.Color.Validate(),
+		"education":      s.Education.Validate(),
+		"salary":         validate.Max(s.Salary, 123.456),
+		"duration":       validate.Max(s.Experience, time.Duration(1)*time.Hour),
+		"birthday":       validate.After(s.Birthday, time.Date(1984, 1, 1, 0, 0, 0, 0, time.UTC)),
+		"vacation_start": validate.Before(s.VacationStart, time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
+	})
+}
+```
+
+Benchmarks:
+```
+goos: darwin
+goarch: amd64
+pkg: github.com/nikolaydubina/validate
+cpu: VirtualApple @ 2.50GHz
+BenchmarkEmployee_Error_Message-10                	 2698065	      4359 ns/op	    3866 B/op	      57 allocs/op
+BenchmarkEmployee_Error-10                        	 6993564	      1714 ns/op	    2058 B/op	      21 allocs/op
+BenchmarkEmployee_Success-10                      	14948445	       810 ns/op	    1329 B/op	       7 allocs/op
+BenchmarkEmployeeSimple_Error_Message-10          	 8243392	      1460 ns/op	    1112 B/op	      26 allocs/op
+BenchmarkEmployeeSimple_Error-10                  	33798837	       356 ns/op	     496 B/op	       7 allocs/op
+BenchmarkEmployeeSimple_Success-10                	66953932	       182 ns/op	      96 B/op	       3 allocs/op
+BenchmarkEmployeeNoContainers_Error_Message-10    	19754359	       600 ns/op	     576 B/op	      10 allocs/op
+BenchmarkEmployeeNoContainers_Error-10            	61285670	       194 ns/op	     368 B/op	       3 allocs/op
+BenchmarkEmployeeNoContainers_Success-10          	123293473	        98 ns/op	      48 B/op	       1 allocs/op
+PASS
+ok  	github.com/nikolaydubina/validate	128.263s
+```
+
 ## Reference
 
 - As of `2022-04-01`, Go does not support generic arrays.
