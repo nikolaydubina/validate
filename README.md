@@ -102,17 +102,17 @@ goos: darwin
 goarch: amd64
 pkg: github.com/nikolaydubina/validate
 cpu: VirtualApple @ 2.50GHz
-BenchmarkEmployee_Error_Message-10                	 3298105	      3663 ns/op	    2825 B/op	      65 allocs/op
-BenchmarkEmployee_Error-10                        	 9254660	      1291 ns/op	    1344 B/op	      34 allocs/op
-BenchmarkEmployee_Success-10                      	25155782	       475 ns/op	     552 B/op	      14 allocs/op
-BenchmarkEmployeeSimple_Error_Message-10          	 8764581	      1365 ns/op	     992 B/op	      28 allocs/op
-BenchmarkEmployeeSimple_Error-10                  	30016674	       397 ns/op	     504 B/op	      13 allocs/op
-BenchmarkEmployeeSimple_Success-10                	65274387	       184 ns/op	     224 B/op	       6 allocs/op
-BenchmarkEmployeeNoContainers_Error_Message-10    	25096866	       482 ns/op	     280 B/op	      10 allocs/op
-BenchmarkEmployeeNoContainers_Error-10            	72819344	       166 ns/op	     136 B/op	       5 allocs/op
-BenchmarkEmployeeNoContainers_Success-10          	143083858	        83 ns/op	      64 B/op	       2 allocs/op
+BenchmarkEmployee_Error_Message-10                	 3579223	      3379 ns/op	    2761 B/op	      62 allocs/op
+BenchmarkEmployee_Error-10                        	 9361948	      1277 ns/op	    1344 B/op	      34 allocs/op
+BenchmarkEmployee_Success-10                      	25418672	       474 ns/op	     552 B/op	      14 allocs/op
+BenchmarkEmployeeSimple_Error_Message-10          	 8757170	      1364 ns/op	     992 B/op	      28 allocs/op
+BenchmarkEmployeeSimple_Error-10                  	30418941	       394 ns/op	     504 B/op	      13 allocs/op
+BenchmarkEmployeeSimple_Success-10                	65194581	       184 ns/op	     224 B/op	       6 allocs/op
+BenchmarkEmployeeNoContainers_Error_Message-10    	24971338	       483 ns/op	     280 B/op	      10 allocs/op
+BenchmarkEmployeeNoContainers_Error-10            	72736639	       165 ns/op	     136 B/op	       5 allocs/op
+BenchmarkEmployeeNoContainers_Success-10          	143333276	        83 ns/op	      64 B/op	       2 allocs/op
 PASS
-ok  	github.com/nikolaydubina/validate	125.203s
+ok  	github.com/nikolaydubina/validate	124.950s
 ```
 
 ## Appendix A: Comparison to other validators

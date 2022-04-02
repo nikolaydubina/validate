@@ -105,7 +105,7 @@ func (s Before) Validate() error {
 }
 
 func (s Before) Error() string {
-	return fmt.Sprintf("%s(%v) is not before (%v)", s.Name, s.Value, s.Time)
+	return s.Name + "(" + s.Value.String() + ") is not before (" + s.Time.String() + ")"
 }
 
 type After struct {
@@ -122,5 +122,5 @@ func (s After) Validate() error {
 }
 
 func (s After) Error() string {
-	return fmt.Sprintf("%s(%v) is not after (%v)", s.Name, s.Value, s.Time)
+	return s.Name + "(" + s.Value.String() + ") is not after (" + s.Time.String() + ")"
 }
