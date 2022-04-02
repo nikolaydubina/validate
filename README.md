@@ -46,8 +46,8 @@ func (e Education) Validate() error {
 		return errors.New("my special error")
 	}
 	return validate.All(
-		validate.Min[int]{Value: e.Duration, Min: 10},
-		validate.OneOf[string]{Value: e.SchoolName, Values: []string{"KAIST", "Stanford"}},
+		validate.Min("", e.Duration, 10),
+		validate.OneOf("", e.SchoolName, "KAIST", "Stanford"),
 	)
 }
 
