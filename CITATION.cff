@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: If you reference this library in publication, please cite it as below.
+title: Lightweight validation in Go
+abstract: Lightweight high-performance entity validation in Go
+authors:
+- family-names: Dubina
+  given-names: Nikolay
+version: 2.1
+date-released: 2022-04-03
+license: MIT
+repository-code: https://github.com/nikolaydubina/validate
+url: https://github.com/nikolaydubina/validate
