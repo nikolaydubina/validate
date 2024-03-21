@@ -5,6 +5,7 @@
 [![codecov](https://codecov.io/gh/nikolaydubina/validate/branch/main/graph/badge.svg?token=76JC6fX7DP)](https://codecov.io/gh/nikolaydubina/validate)
 [![Go Reference](https://pkg.go.dev/badge/github.com/nikolaydubina/validate.svg)](https://pkg.go.dev/github.com/nikolaydubina/validate)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikolaydubina/validate)](https://goreportcard.com/report/github.com/nikolaydubina/validate)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/nikolaydubina/validate/badge)](https://securityscorecards.dev/viewer/?uri=github.com/nikolaydubina/validate)
 
 This is convenient when you have custom validation and nested structures.  
 
